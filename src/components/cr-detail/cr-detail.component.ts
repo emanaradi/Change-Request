@@ -7,7 +7,7 @@ import { CrDetail, TimelineEntry } from '../../models/cr.models';
 import { idle, loading, ViewState } from '../../common/view-state';
 import { computeDiff, DiffRow } from '../diff.util';
 import { formatMoney } from '../../common/money.util';
-import { canApprovePolicy} from "../../common/permissions";
+import { canApprovePolicy } from '../../common/permissions';
 
 /**
  * Change Request DETAIL page: loads a CR and renders the diff/preview, the approval timeline, and
@@ -56,8 +56,9 @@ export class CrDetailComponent implements OnInit {
 
 	/** Approval timeline, oldest-first. */
 	get timeline(): TimelineEntry[] {
-		// TODO: return the audit entries ordered chronologically (oldest first).
-		return this.detail?.audit ?? [];
+		const audit = this.detail?.audit ?? [];
+
+		return [...audit].sort((a, b) => new Date(a.at).getTime() - new Date(b.at).getTime());
 	}
 
 	/** Whether the current user may approve the loaded CR. */
