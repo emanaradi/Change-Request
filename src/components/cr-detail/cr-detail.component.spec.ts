@@ -3,6 +3,7 @@ import { CrDetailComponent } from './cr-detail.component';
 import { SessionService } from '../../session/session.service';
 import { users } from '../../api/fixtures';
 import { ReqUser } from '../../models/cr.models';
+import { CrApiService } from '../../api/cr-api.service';
 
 const flush = () => new Promise((r) => setTimeout(r, 0));
 
@@ -90,5 +91,78 @@ describe('CrDetailComponent', () => {
 		fixture.detectChanges();
 
 		expect(fixture.componentInstance.detail?.status).toBe('PENDING_APPROVAL');
+	});
+
+	it('disables actions while approval is in progress', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+
+		const api = TestBed.inject(CrApiService);
+		api.latencyMs = 100;
+
+		const approvePromise = fixture.componentInstance.approve();
+
+		fixture.detectChanges();
+
+		const approveButton = fixture.nativeElement.querySelector('.cr-actions__approve');
+
+		expect(fixture.componentInstance.submitting).toBe(true);
+		expect(approveButton.disabled).toBe(true);
+
+		await approvePromise;
+		fixture.detectChanges();
+
+		expect(fixture.componentInstance.submitting).toBe(false);
+	});
+
+	it('disables actions while approval is in progress', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+
+		const api = TestBed.inject(CrApiService);
+		api.latencyMs = 100;
+
+		const approvePromise = fixture.componentInstance.approve();
+
+		fixture.detectChanges();
+
+		const approveButton = fixture.nativeElement.querySelector('.cr-actions__approve');
+
+		expect(fixture.componentInstance.submitting).toBe(true);
+		expect(approveButton.disabled).toBe(true);
+
+		await approvePromise;
+		fixture.detectChanges();
+
+		expect(fixture.componentInstance.submitting).toBe(false);
+	});
+
+	it('shows an error and keeps the detail when approval fails', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+
+		const api = TestBed.inject(CrApiService);
+		api.failNext = true;
+
+		await fixture.componentInstance.approve();
+		fixture.detectChanges();
+
+		expect(fixture.componentInstance.detail?.status).toBe('PENDING_APPROVAL');
+
+		expect(fixture.componentInstance.actionError).toBe('Network error');
+
+		expect(fixture.componentInstance.submitting).toBe(false);
+	});
+
+	it('renders an approval error message when the action fails', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+
+		const api = TestBed.inject(CrApiService);
+		api.failNext = true;
+
+		await fixture.componentInstance.approve();
+		fixture.detectChanges();
+
+		const error = fixture.nativeElement.querySelector('.cr-actions__error');
+
+		expect(error).not.toBeNull();
+		expect(error.textContent).toContain('Network error');
 	});
 });
