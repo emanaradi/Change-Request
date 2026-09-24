@@ -52,4 +52,16 @@ describe('CrDetailComponent', () => {
 
 		expect(rejectButton.disabled).toBe(false);
 	});
+
+	it('approves a pending change request', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+
+		expect(fixture.componentInstance.detail?.status).toBe('PENDING_APPROVAL');
+
+		await fixture.componentInstance.approve();
+		fixture.detectChanges();
+
+		expect(fixture.componentInstance.detail?.status).toBe('APPROVED');
+		expect(fixture.componentInstance.detail?.audit.at(-1)?.action).toBe('APPROVE');
+	});
 });
