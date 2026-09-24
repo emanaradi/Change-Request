@@ -43,4 +43,16 @@ describe('CrListComponent', () => {
 		expect(rows.length).toBe(1);
 		expect(rows[0].textContent).toContain('CR-1');
 	});
+
+	it('shows an empty message when the selected status has no matches', async () => {
+		const fixture = await render(users.approver);
+
+		fixture.componentInstance.onFilterChange('REJECTED');
+		fixture.detectChanges();
+
+		const empty = fixture.nativeElement.querySelector('.cr-list__empty');
+
+		expect(empty).not.toBeNull();
+		expect(empty.textContent).toContain('No change requests match this status.');
+	});
 });
