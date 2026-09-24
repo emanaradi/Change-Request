@@ -39,4 +39,17 @@ describe('CrDetailComponent', () => {
 
 		expect(timeline.map((entry) => entry.action)).toEqual(['CREATE', 'SUBMIT', 'SEND_FOR_APPROVAL']);
 	});
+
+	it('Keeps reject disabled until a valid reason is entered', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+
+		const rejectButton = fixture.nativeElement.querySelector('.cr-actions__reject-btn');
+
+		expect(rejectButton.disabled).toBe(true);
+
+		fixture.componentInstance.rejectControl.setValue('Please review the change.');
+		fixture.detectChanges();
+
+		expect(rejectButton.disabled).toBe(false);
+	});
 });
