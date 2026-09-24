@@ -250,4 +250,39 @@ describe('AppComponent', () => {
 		expect(empty).not.toBeNull();
 		expect(empty.textContent).toContain('Select a change request to view its details.');
 	});
+
+	it('clears the selected change request when switching users', async () => {
+		await TestBed.configureTestingModule({
+			imports: [AppComponent],
+			providers: [
+				{
+					provide: SessionService,
+					useValue: { user: users.approver },
+				},
+			],
+		}).compileComponents();
+
+		const fixture = TestBed.createComponent(AppComponent);
+
+		fixture.detectChanges();
+		await new Promise((resolve) => setTimeout(resolve, 0));
+		fixture.detectChanges();
+
+		await selectChangeRequest(fixture, 'CR-1');
+
+		expect(fixture.componentInstance.selectedId).toBe('CR-1');
+
+		fixture.componentInstance.switchUser('viewer');
+		fixture.detectChanges();
+
+		await new Promise((resolve) => setTimeout(resolve, 0));
+		fixture.detectChanges();
+
+		expect(fixture.componentInstance.selectedId).toBeNull();
+
+		const empty = fixture.nativeElement.querySelector('.cr-detail--empty');
+
+		expect(empty).not.toBeNull();
+		expect(empty.textContent).toContain('Select a change request to view its details.');
+	});
 });
