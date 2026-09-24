@@ -63,12 +63,11 @@ export class CrDetailComponent implements OnInit {
 
 	/** Whether the current user may approve the loaded CR. */
 	get canApprove(): boolean {
-		// NOTE: this only looks at the CR status. The UI must also respect the user's permissions.
 		return this.detail?.status === 'PENDING_APPROVAL' && canApprovePolicy(this.session.user);
 	}
 
 	get canReject(): boolean {
-		return this.detail?.status === 'PENDING_APPROVAL';
+		return this.detail?.status === 'PENDING_APPROVAL' && canApprovePolicy(this.session.user);
 	}
 
 	fmt(amount: number): string {
@@ -96,8 +95,32 @@ export class CrDetailComponent implements OnInit {
 	}
 
 	async reject(): Promise<void> {
-		// TODO: require a valid rejectControl, then perform the reject action through the API and
-		//       reflect the outcome in the view.
-		throw new Error('reject() not implemented');
+		if (!this.canReject || this.submitting || this.rejectControl.invalid) {
+			return;
+		}
+
+		const reason = this.rejectControl.value.trim();
+
+		if (!reason) {
+			return;
+		}
+
+		this.submitting = true;
+		this.actionError = undefined;
+
+		try {
+			const updated = await this.api.reject(this.session.user, this.id, new Date().toISOString(), reason);
+
+			this.state = {
+				status: 'loaded',
+				data: updated,
+			};
+
+			this.rejectControl.reset();
+		} catch (err) {
+			this.actionError = (err as Error).message;
+		} finally {
+			this.submitting = false;
+		}
 	}
 }

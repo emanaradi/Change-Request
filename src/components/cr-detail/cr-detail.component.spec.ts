@@ -64,4 +64,31 @@ describe('CrDetailComponent', () => {
 		expect(fixture.componentInstance.detail?.status).toBe('APPROVED');
 		expect(fixture.componentInstance.detail?.audit.at(-1)?.action).toBe('APPROVE');
 	});
+
+	it('rejects a pending change request with a reason', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+
+		fixture.componentInstance.rejectControl.setValue('The proposed price needs further review.');
+
+		await fixture.componentInstance.reject();
+		fixture.detectChanges();
+
+		expect(fixture.componentInstance.detail?.status).toBe('REJECTED');
+
+		const lastAudit = fixture.componentInstance.detail?.audit.at(-1);
+
+		expect(lastAudit?.action).toBe('REJECT');
+		expect(lastAudit?.note).toBe('The proposed price needs further review.');
+	});
+
+	it('does not reject when the reason is invalid', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+
+		fixture.componentInstance.rejectControl.setValue('   ');
+
+		await fixture.componentInstance.reject();
+		fixture.detectChanges();
+
+		expect(fixture.componentInstance.detail?.status).toBe('PENDING_APPROVAL');
+	});
 });
