@@ -10,5 +10,11 @@
 
 <main class="app-layout" *ngIf="show">
 	<app-cr-list (select)="onSelect($event)"></app-cr-list>
-	<app-cr-detail *ngIf="selectedId" [id]="selectedId" (changed)="onChangeRequestChanged()"></app-cr-detail>
+	<app-cr-detail *ngIf="selectedId; else noSelection" [id]="selectedId" (changed)="onChangeRequestChanged()"></app-cr-detail>
+
+	<ng-template #noSelection>
+		<section class="cr-detail cr-detail--empty">
+			<p>Select a change request to view its details.</p>
+		</section>
+	</ng-template>
 </main>

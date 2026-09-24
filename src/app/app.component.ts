@@ -21,16 +21,17 @@ import { users } from '../api/fixtures';
 export class AppComponent {
 	readonly users = users;
 	readonly userKeys = Object.keys(users);
-	selectedId: string | null = 'CR-1';
+	selectedId: string | null = null;
 	show = true;
 
-	@ViewChild(CrListComponent) 
+	@ViewChild(CrListComponent)
 	listComponent!: CrListComponent;
 
 	constructor(public readonly session: SessionService) {}
 
 	switchUser(key: string): void {
 		this.session.user = users[key];
+		this.selectedId = null;
 		this.reload();
 	}
 

@@ -1,8 +1,16 @@
-import { TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { SessionService } from '../session/session.service';
 import { users } from '../api/fixtures';
 import { CrApiService } from '../api/cr-api.service';
+
+async function selectChangeRequest(fixture: ComponentFixture<AppComponent>, id: string): Promise<void> {
+	fixture.componentInstance.onSelect(id);
+	fixture.detectChanges();
+
+	await new Promise((resolve) => setTimeout(resolve, 0));
+	fixture.detectChanges();
+}
 
 describe('AppComponent', () => {
 	it('updates the detail when a different change request is selected', async () => {
@@ -57,6 +65,8 @@ describe('AppComponent', () => {
 		await new Promise((resolve) => setTimeout(resolve, 0));
 		fixture.detectChanges();
 
+		await selectChangeRequest(fixture, 'CR-1');
+
 		const approveButton = fixture.nativeElement.querySelector('.cr-actions__approve') as HTMLButtonElement | null;
 
 		const rejectButton = fixture.nativeElement.querySelector('.cr-actions__reject-btn') as HTMLButtonElement | null;
@@ -84,6 +94,8 @@ describe('AppComponent', () => {
 
 		await new Promise((resolve) => setTimeout(resolve, 0));
 		fixture.detectChanges();
+
+		await selectChangeRequest(fixture, 'CR-1');
 
 		const approveButton = fixture.nativeElement.querySelector('.cr-actions__approve') as HTMLButtonElement | null;
 
@@ -113,6 +125,8 @@ describe('AppComponent', () => {
 
 		await new Promise((resolve) => setTimeout(resolve, 0));
 		fixture.detectChanges();
+
+		await selectChangeRequest(fixture, 'CR-1');
 
 		const reason = fixture.nativeElement.querySelector('.cr-actions__reason') as HTMLTextAreaElement;
 
@@ -154,6 +168,8 @@ describe('AppComponent', () => {
 		await new Promise((resolve) => setTimeout(resolve, 0));
 		fixture.detectChanges();
 
+		await selectChangeRequest(fixture, 'CR-1');
+
 		const api = TestBed.inject(CrApiService);
 		api.failNext = true;
 
@@ -188,6 +204,8 @@ describe('AppComponent', () => {
 		await new Promise((resolve) => setTimeout(resolve, 0));
 		fixture.detectChanges();
 
+		await selectChangeRequest(fixture, 'CR-1');
+
 		const api = TestBed.inject(CrApiService);
 		api.latencyMs = 100;
 
@@ -206,5 +224,30 @@ describe('AppComponent', () => {
 		fixture.detectChanges();
 
 		expect(fixture.componentInstance.selectedId).toBe('CR-1');
+	});
+
+	it('shows a prompt when no change request is selected', async () => {
+		await TestBed.configureTestingModule({
+			imports: [AppComponent],
+			providers: [
+				{
+					provide: SessionService,
+					useValue: { user: users.approver },
+				},
+			],
+		}).compileComponents();
+
+		const fixture = TestBed.createComponent(AppComponent);
+
+		fixture.detectChanges();
+		await new Promise((resolve) => setTimeout(resolve, 0));
+		fixture.detectChanges();
+
+		expect(fixture.componentInstance.selectedId).toBeNull();
+
+		const empty = fixture.nativeElement.querySelector('.cr-detail--empty');
+
+		expect(empty).not.toBeNull();
+		expect(empty.textContent).toContain('Select a change request to view its details.');
 	});
 });

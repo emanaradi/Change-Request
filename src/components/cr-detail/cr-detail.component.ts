@@ -27,14 +27,9 @@ export class CrDetailComponent implements OnChanges {
 	state: ViewState<CrDetail> = idle();
 	submitting = false;
 	actionError?: string;
-	// TODO: add validation so the form is invalid until a reason is entered.
 	rejectControl = new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.pattern(/\S/)] });
 
 	constructor(private readonly api: CrApiService, private readonly session: SessionService) {}
-
-	ngOnInit(): void {
-		void this.load();
-	}
 
 	ngOnChanges(changes: SimpleChanges): void {
 		if (changes['id']) {
