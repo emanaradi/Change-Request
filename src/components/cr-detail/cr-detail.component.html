@@ -42,14 +42,22 @@
 		<!-- Approval timeline -->
 		<section class="cr-timeline">
 			<h3>Timeline</h3>
-			<ol class="cr-timeline__list">
-				<li *ngFor="let entry of timeline" class="cr-timeline__entry">
-					<span class="cr-timeline__action">{{ entry.action }}</span>
-					<span class="cr-timeline__by">{{ entry.byUserId }}</span>
-					<span class="cr-timeline__at">{{ entry.at }}</span>
-					<span *ngIf="entry.note" class="cr-timeline__note">{{ entry.note }}</span>
-				</li>
-			</ol>
+			<table>
+				<thead>
+					<tr>
+						<th>Action</th>
+						<th>By</th>
+						<th>At</th>
+						<th>Note</th>
+					</tr>
+				</thead>
+				<tr *ngFor="let entry of timeline" class="cr-timeline__entry">
+					<td class="cr-timeline__action">{{ entry.action }}</td>
+					<td class="cr-timeline__by">{{ entry.byUserId }}</td>
+					<td class="cr-timeline__at">{{ entry.at | date : 'MMM d, y, h:mm a' }}</td>
+					<td *ngIf="entry.note" class="cr-timeline__note">{{ entry.note }}</td>
+				</tr>
+			</table>
 		</section>
 
 		<!-- Actions -->

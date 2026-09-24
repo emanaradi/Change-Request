@@ -55,3 +55,18 @@ button:disabled {
 .cr-diff__row[data-kind='removed'] {
 	background: #fdecea;
 }
+.cr-actions {
+	padding-top: 1rem;
+	display: flex;
+	gap: 1rem;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.cr-actions__reject {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+}
