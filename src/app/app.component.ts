@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CrListComponent } from '../components/cr-list/cr-list.component';
 import { CrDetailComponent } from '../components/cr-detail/cr-detail.component';
@@ -24,6 +24,9 @@ export class AppComponent {
 	selectedId: string | null = 'CR-1';
 	show = true;
 
+	@ViewChild(CrListComponent) 
+	listComponent!: CrListComponent;
+
 	constructor(public readonly session: SessionService) {}
 
 	switchUser(key: string): void {
@@ -33,6 +36,10 @@ export class AppComponent {
 
 	onSelect(id: string): void {
 		this.selectedId = id;
+	}
+
+	onChangeRequestChanged(): void {
+		void this.listComponent.load();
 	}
 
 	/** Destroy + recreate the panes so they re-load as the newly selected user. */

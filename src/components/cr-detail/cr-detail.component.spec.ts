@@ -14,7 +14,7 @@ async function render(user: ReqUser, id: string): Promise<ComponentFixture<CrDet
 	});
 	await TestBed.compileComponents();
 	const fixture = TestBed.createComponent(CrDetailComponent);
-	fixture.componentInstance.id = id;
+	fixture.componentRef.setInput('id', id);
 	fixture.detectChanges(); // ngOnInit -> load()
 	await flush(); // let the mock API resolve
 	fixture.detectChanges(); // render the loaded state
@@ -164,5 +164,21 @@ describe('CrDetailComponent', () => {
 
 		expect(error).not.toBeNull();
 		expect(error.textContent).toContain('Network error');
+	});
+
+	it('loads the selected change request when the id changes', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+
+		expect(fixture.componentInstance.detail?.id).toBe('CR-1');
+
+		fixture.componentRef.setInput('id', 'CR-2');
+		// Trigger ngOnchanges()
+		fixture.detectChanges();
+
+		// wait for the API request to finish
+		await flush();
+		fixture.detectChanges();
+
+		expect(fixture.componentInstance.detail?.id).toBe('CR-2');
 	});
 });
